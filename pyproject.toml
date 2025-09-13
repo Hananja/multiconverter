@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 61.0", "wheel"]
+requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,11 +10,11 @@ readme = "README.md"
 authors = [
     {name = "Hananja", email = "multiconverter@co.zeitloos.de"}
 ]
-license = {text = "GPL"}
+license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.10"
 dependencies = [
-    "lxml~=6.0.1",
-    "Jinja2~=3.1.6",
+    "lxml>=6.0.1,<7.0",
+    "Jinja2>=3.1.6,<4.0",
 ]
 
 [project.urls]
@@ -22,13 +22,16 @@ Homepage = "https://github.com/hananja/multiconverter"
 Repository = "https://github.com/hananja/multiconverter"
 
 [project.scripts]
-mein-projekt = "multiconverter.main:main"
+multiconverter = "multiconverter.main:main"
+
+[tool.setuptools]
+include-package-data = true  # Wichtig für package-data!
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-mein_projekt = [
+"* " = [
     "templates/*",
     "xml/*",
 ]
