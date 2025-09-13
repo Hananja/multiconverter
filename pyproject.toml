@@ -26,3 +26,9 @@ mein-projekt = "multiconverter.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+mein_projekt = [
+    "templates/*",
+    "xml/*",
+]
