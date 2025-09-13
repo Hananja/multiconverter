@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="{{ manifest_identifier }}"
+          xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/qtiv2p1_imscpv1p2_v1p0.xsd    http://ltsc.ieee.org/xsd/LOM http://www.imsglobal.org/xsd/imsmd_loose_v1p3p2.xsd    http://www.imsglobal.org/xsd/imsqti_metadata_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_metadata_v2p1p1.xsd"
+          xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <metadata>
+        <schema>QTIv2.1 Package</schema>
+        <schemaversion>1.0.0</schemaversion>
+        <lom xmlns="http://ltsc.ieee.org/xsd/LOM">
+            <general>
+                <title>
+                    <string xml:lang="en">Content package with QTI v2.1 items</string>
+                </title>
+            </general>
+            <technical>
+                <format>text/x-imsqti-item-xml</format>
+            </technical>
+            <rights>
+                <description>
+                    <string xml:lang="en">All rights reserved.</string>
+                </description>
+            </rights>
+        </lom>
+    </metadata>
+    <organizations/>
+    <resources>
+        {% for r in resources %}
+            {{ r }}
+        {% endfor %}
+    </resources>
+</manifest>

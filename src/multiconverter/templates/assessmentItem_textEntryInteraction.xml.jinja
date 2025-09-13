@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessmentItem
+        xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/qtiv2p1_imscpv1p2_v1p0.xsd http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1p2.xsd"
+        identifier="{{ assessment_identifier }}" title="{{ title }}" adaptive="false" timeDependent="false"
+        toolName="itslearning" toolVersion="2025.9" xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:qti="http://www.imsglobal.org/xsd/imsqti_v2p1">
+    {% for response_id, response_alts in responses_map.items() %}
+    <responseDeclaration cardinality="single" baseType="string" identifier="{{ response_id }}">
+        <correctResponse>
+            <value>{{ response_alts[0] }}</value>
+        </correctResponse>
+        {% if response_alts|length > 1 %}
+        <mapping lowerBound="0" upperBound="0" defaultValue="0">
+            {% for alt in response_alts[1:] %}
+            <mapEntry mapKey="{{ alt }}" mappedValue="1"/>
+            {% endfor %}
+        </mapping>
+        {% endif %}
+    </responseDeclaration>
+    {% endfor %}
+    <outcomeDeclaration cardinality="single" baseType="identifier" identifier="FEEDBACK" view="" normalMaximum="0"
+                        normalMinimum="0" masteryValue="0"/>
+    <itemBody>
+        {%  if question_html %}
+        <div class="htmlContent">
+            <![CDATA[{{ question_html }}]]></div>
+        {%  endif %}
+        <p>{{ fill_in_html }}</p>
+    </itemBody>
+    <responseProcessing/>
+</assessmentItem>

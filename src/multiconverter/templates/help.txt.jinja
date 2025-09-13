@@ -1,0 +1,7 @@
+Usage: python -m multiconverter <output_file>.zip <input_file1>.xml [<input_file2>.xml ...]
+Process one or more AI generated XML files
+
+Message to LLM:  ----------------------------------
+Die Ausgabe soll ausschließlich im XML Format erfolgen und der folgenden XSD genügen: {{ include_min_xsd_file("../xml/llmquestions.xsd") }}
+
+Erstelle ein Beispieldokument mit je zwei Fragen pro Fragetyp

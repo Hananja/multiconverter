@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<questions xmlns="https://github.com/Hananja/multiconverter">
+
+  <multiple-choice-question>
+    <text>Welche dieser Programmiersprachen sind interpretierte Sprachen?</text>
+    <options>
+      <option correct="true">Python</option>
+      <option correct="true">JavaScript</option>
+      <option correct="false">C</option>
+      <option correct="false">C++</option>
+    </options>
+  </multiple-choice-question>
+
+  <multiple-choice-question>
+    <text>Welche Protokolle gehören zum TCP/IP-Modell?</text>
+    <options>
+      <option correct="true">HTTP</option>
+      <option correct="true">SMTP</option>
+      <option correct="false">USB</option>
+      <option correct="false">HDMI</option>
+    </options>
+  </multiple-choice-question>
+
+  <fill-in-question>
+    <text>Test zu Betriebssystemen</text>
+    <fill-in-text>
+      Das populärste Open-Source-Betriebssystem ist
+      <fill>
+        <alt>Linux</alt>
+        <alt>GNU/Linux</alt>
+      </fill>, und nicht Open-BSD.
+    </fill-in-text>
+  </fill-in-question>
+
+  <fill-in-question>
+    <text>Frage zur Mathematik</text>
+    <fill-in-text>
+      Das Ergebnis von 2 + 2 ist
+      <fill>
+        <alt>4</alt>
+        <alt>vier</alt>
+      </fill>. Und 3 * 3 ist <fill><alt>9</alt></fill>.
+    </fill-in-text>
+  </fill-in-question>
+
+</questions>

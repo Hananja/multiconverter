@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessmentItem
+        xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/qtiv2p1_imscpv1p2_v1p0.xsd http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1p2.xsd"
+        identifier="{{ assessment_identifier }}" title="{{ title }}" adaptive="false" timeDependent="false" toolName="itslearning"
+        toolVersion="3.114" xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:qti="http://www.imsglobal.org/xsd/imsqti_v2p1">
+    <responseDeclaration cardinality="{{ cardinality }}" baseType="identifier" identifier="RESPONSE">
+        <correctResponse>
+            <value>plus</value>
+        </correctResponse>
+        <mapping lowerBound="-1" upperBound="1" defaultValue="0">
+            <mapEntry mapKey="plus" mappedValue="1"/>
+            <mapEntry mapKey="zero" mappedValue="0"/>
+            <mapEntry mapKey="minus" mappedValue="-0.5"/>
+        </mapping>
+    </responseDeclaration>
+    <outcomeDeclaration cardinality="single" baseType="identifier" identifier="FEEDBACK" view="" normalMaximum="0"
+                        normalMinimum="0" masteryValue="0"/>
+    <outcomeDeclaration cardinality="{{ cardinality }}" baseType="identifier" identifier="INTEGRATEDFEEDBACK" view=""
+                        normalMaximum="0" normalMinimum="0" masteryValue="0"/>
+    <itemBody>
+        <div class="htmlContent"><![CDATA[{{ question_html }}]]></div>
+        <choiceInteraction responseIdentifier="RESPONSE" shuffle="true" maxChoices="{{ max_choices }}" minChoices="0">
+            {% for identifier, content_html in choices %}
+            <simpleChoice fixed="false" showHide="show" identifier="{{ identifier }}">
+                <div class="htmlContent"><![CDATA[{{ content_html }}]]></div>
+            </simpleChoice>
+            {% endfor %}
+        </choiceInteraction>
+    </itemBody>
+</assessmentItem>

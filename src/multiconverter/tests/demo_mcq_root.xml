@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<multiple-choice-question xmlns="https://github.com/Hananja/multiconverter">
+    <text>Was bedeutet WWW?</text>
+    <options>
+        <option correct="false">Willy will's wissen</option>
+        <option correct="false">Wow, wie wichtig</option>
+        <option correct="true">World Wide Web</option>
+        <option correct="false">Wo? Wer? Wann?</option>
+    </options>
+</multiple-choice-question>
