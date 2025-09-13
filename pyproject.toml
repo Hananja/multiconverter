@@ -31,7 +31,7 @@ include-package-data = true  # Wichtig für package-data!
 where = ["src"]
 
 [tool.setuptools.package-data]
-"* " = [
+"*" = [
     "templates/*",
     "xml/*",
 ]
