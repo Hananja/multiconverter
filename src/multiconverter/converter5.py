@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from uuid import uuid4
 from itertools import starmap
 
-from src.multiconverter.tools import include_min_xsd_file, get_local_tag
-from src.multiconverter.xml_validator import XMLValidator, Error
+from multiconverter.tools import include_min_xsd_file, get_local_tag
+from multiconverter.xml_validator import XMLValidator, Error
 
 # Template-Verzeichnis relativ zum Skript finden
 script_dir = os.path.dirname(os.path.abspath(__file__))
