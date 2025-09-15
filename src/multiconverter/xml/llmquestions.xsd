@@ -4,7 +4,7 @@
     targetNamespace="https://github.com/Hananja/multiconverter"
     xmlns="https://github.com/Hananja/multiconverter">
 
-    <!-- The comments are also used to inform AI LLM -->
+    <!-- The comments are also used to inform AI LLM. Note that the less than and greater than symbols must be represented with the entities &lt; and &gt;. -->
     <xs:element name="questions">
         <xs:complexType>
             <xs:sequence>
@@ -47,7 +47,7 @@
     </xs:element>
 
     <xs:element name="fill-in-question">
-        <!-- This question type presents a task in the <text> element. The <fill-in-text> element contains a task text that may contain gaps. These are marked with <fill> and must be filled in during the test. The correct possible alternatives for the answer are contained in <alt> tags within a <fill> element. -->
+        <!-- This question type presents an optional description in the <text> element. The <fill-in-text> element contains a task text that may contain gaps. These are marked with <fill> and must be filled in during the test. The correct possible alternatives for the answer are contained in <alt> tags within a <fill> element. -->
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="text" type="xs:string" minOccurs="0"/>
