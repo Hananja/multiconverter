@@ -74,7 +74,7 @@ class QuestionHandlers:
         question_text = question.find('./m:text', xmlns).text if question.find('./m:text', xmlns) is not None else None
         item_context['title'] = ("FillInTheBlankText: " + question_text[:20] if question_text else ""
                                   + "..." if question_text and len(question_text) > 20 else "" )
-        item_context['question_html'] = question_text
+        item_context['question_html'] = escape_content_data(question_text)
         item_context['responses_map'] = {}
         fill_in = question.find('./m:fill-in-text', xmlns)
         fill_in_text = fill_in.text if fill_in.text is not None else ""
@@ -84,7 +84,7 @@ class QuestionHandlers:
                                                                           fill.findall('./m:alt', xmlns)))
             fill_in_text += f'<textEntryInteraction responseIdentifier="{response_identifier}"/>'
             fill_in_text += fill.tail if fill.tail is not None else ""  # following text
-        item_context['fill_in_html'] = fill_in_text
+        item_context['fill_in_html'] = escape_content_data(fill_in_text)
 
         self.items_map[item_context['assessment_identifier']] = QuestionFragments(
             item_text=jinja_env.get_template("assessmentItem_textEntryInteraction.xml.jinja").render(**item_context),

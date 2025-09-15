@@ -1,7 +1,11 @@
 extract: clean
-	open output00.zip output01.zip
+	open output_demo_fiq_root.zip output_demo_mcq_root.zip output_demo.zip
 
 clean:
-	-rm -r output00 output01
+	-rm -r  output_demo_fiq_root output_demo_mcq_root output_demo
 
-.PHONY: clean extract
+
+distclean: clean
+	-rm output_demo_fiq_root.zip output_demo_mcq_root.zip output_demo.zip
+
+.PHONY: clean extract distclean

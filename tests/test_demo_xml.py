@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-import sys
+import sys, re
 from io import StringIO
 from multiconverter.converter5 import main
 
@@ -11,6 +11,7 @@ class TestConverter(unittest.TestCase):
         self.test_files = [ # (Filename, Exitcode)
             ("demo.xml", 0),
             ("demo_mcq_root.xml", 0),
+            ("demo_fiq_root.xml", 0),
             ("demo_err.xml", 1),
             ("demo_not_existant.xml", 1),
         ]
@@ -35,7 +36,7 @@ class TestConverter(unittest.TestCase):
         for i, (filename, exitcode) in enumerate(self.test_files):
             print(f"Testing '{filename}': {exitcode}")
             with patch('sys.stdout', new=StringIO()) as mock_stdout:
-                main([sys.argv[0], f"output{i:02}.zip", filename])
+                main([sys.argv[0], f"output_{re.sub('[.]xml$', '', filename)}.zip", filename])
 
                 output = mock_stdout.getvalue()
                 try:
