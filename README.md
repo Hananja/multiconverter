@@ -28,7 +28,7 @@ Erstelle ein Beispieldokument mit je zwei Fragen pro Fragetyp
 ```
 
 
-Es ist empfehlenswert, zunächst die gesamte erzeugte XM--Datei zu verarbeiten,
+Es ist empfehlenswert, zunächst die gesamte erzeugte XML Datei zu verarbeiten,
 weil bei eventuellen Fehlern der KI eine Fehlermeldung ausgegeben wird, die das
 LLM auffordert, die Ausgabe zu korrigieren:
 
@@ -41,5 +41,5 @@ Message to LLM:  ----------------------------------
 Überleg noch einmal: Das Dokument entspricht nicht der XSD. Der Parser liefert den Fehler "XML-Syntax-Fehler: StartTag: invalid element name, line 141, column 37 (test_raw.xml, line 141)".
 ```
 
-Wenn die Kommunikation mit dem LLM  nach  mehreren  Iterationen fehlerfrei funktioniert hat, können die XML
+Wenn die Kommunikation mit dem LLM nach mehreren Iterationen fehlerfrei funktioniert hat, können die XML
 Dateien editiert und angepasst werden (z. B. durch Löschen von Fragen).
