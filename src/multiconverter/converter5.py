@@ -77,13 +77,13 @@ class QuestionHandlers:
         item_context['question_html'] = question_text
         item_context['responses_map'] = {}
         fill_in = question.find('./m:fill-in-text', xmlns)
-        fill_in_text = fill_in.text
+        fill_in_text = fill_in.text if fill_in.text is not None else ""
         for response_counter, fill in enumerate(fill_in):
             response_identifier = f'RESPONSE{response_counter:02}'
             item_context['responses_map'][response_identifier] = list(map(lambda x:x.text,
                                                                           fill.findall('./m:alt', xmlns)))
             fill_in_text += f'<textEntryInteraction responseIdentifier="{response_identifier}"/>'
-            fill_in_text += fill.tail  # following text
+            fill_in_text += fill.tail if fill.tail is not None else ""  # following text
         item_context['fill_in_html'] = fill_in_text
 
         self.items_map[item_context['assessment_identifier']] = QuestionFragments(
