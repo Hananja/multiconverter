@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <fill-in-question xmlns="https://github.com/Hananja/multiconverter">
+    <text>Für jedes Ereignis, das weder sicher noch unmöglich ist, gilt: </text>
+    <fill-in-text><fill><alt>0</alt></fill> &lt; P(E) &lt; <fill><alt>1</alt></fill> für die Wahrscheinlichkeit des Ereignisses</fill-in-text>
+  </fill-in-question>
