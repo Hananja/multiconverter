@@ -13,7 +13,7 @@ python -m pip install git+https://github.com/Hananja/multiconverter.git
 python -m multiconverter <output_file>.zip <input_file1>.xml [<input_file2>.xml ...]
 ```
 
-Ohne Parameter wir eine Hilfe ausgegeben:
+Ohne Parameter wird eine Hilfe ausgegeben:
 
 ```
 $ ./bin/python -m multiconverter
@@ -26,3 +26,20 @@ Die Ausgabe soll ausschließlich im XML Format erfolgen und der folgenden XSD ge
 
 Erstelle ein Beispieldokument mit je zwei Fragen pro Fragetyp
 ```
+
+
+Es ist empfehlenswert, zunächst die gesamte erzeugte XM--Datei zu verarbeiten,
+weil bei eventuellen Fehlern der KI eine Fehlermeldung ausgegeben wird, die das
+LLM auffordert, die Ausgabe zu korrigieren:
+
+```
+$ ./bin/python -m multiconverter output.zip test_raw.xml 
+Ungültig: test_raw.xml
+The document test_raw.xml is not correct.
+
+Message to LLM:  ----------------------------------
+Überleg noch einmal: Das Dokument entspricht nicht der XSD. Der Parser liefert den Fehler "XML-Syntax-Fehler: StartTag: invalid element name, line 141, column 37 (test_raw.xml, line 141)".
+```
+
+Wenn die Kommunikation mit dem LLM  nach  mehreren  Iterationen fehlerfrei funktioniert hat, können die XML
+Dateien editiert und angepasst werden (z. B. durch Löschen von Fragen).
