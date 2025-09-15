@@ -108,3 +108,31 @@ if __name__ == "__main__":
 
 def get_local_tag(element):
     return etree.QName(element.tag).localname
+
+def escape_content_data(text):
+    """
+        Replaces < and > if they are standing alone and are not part of a tag.
+    """
+    if text is None:
+        return text
+
+    result = []
+    in_tag = False
+    for i, char in enumerate(text):
+        if char == '<':
+            # Check if it's likely starting a tag (followed by valid tag chars)
+            if i + 1 < len(text) and (text[i + 1].isalnum() or text[i + 1] in '!?/'):
+                in_tag = True
+                result.append(char)
+            else:
+                result.append('&lt;')
+        elif char == '>':
+            if in_tag:
+                in_tag = False
+                result.append(char)
+            else:
+                result.append('&gt;')
+        else:
+            result.append(char)
+
+    return ''.join(result)

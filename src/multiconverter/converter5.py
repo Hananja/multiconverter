@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from uuid import uuid4
 from itertools import starmap
 
-from multiconverter.tools import include_min_xsd_file, get_local_tag
+from multiconverter.tools import include_min_xsd_file, get_local_tag, escape_content_data
 from multiconverter.xml_validator import XMLValidator, Error
 
 # Template-Verzeichnis relativ zum Skript finden
@@ -41,7 +41,7 @@ class QuestionHandlers:
     def handle_multiple_choice_question(self, question):
         item_context, manifest_context = {}, {}
         item_context['assessment_identifier'] , manifest_context['resource_identifier'] = self._get_identifiers()
-        if 1 == sum(1 for option in question.find('./m:options', xmlns) if option.attrib['correct']):
+        if 1 == sum(1 for option in question.find('./m:options', xmlns) if option.attrib['correct'] == 'true'):
             item_context['cardinality'] = "single"
             item_context['max_choices'] = "1"
             item_context['title'] = "MultipleChoice"
@@ -50,12 +50,12 @@ class QuestionHandlers:
             item_context['max_choices'] = "0"
             item_context['title'] = "MultipleResponse"
         manifest_context['title'] = item_context['title']  # without ... etc.
-        question_text = question.find('./m:text', xmlns).text
+        question_text = escape_content_data(question.find('./m:text', xmlns).text)
         item_context['title'] += ": " + question_text[:20] + "..." if len(question_text) > 20 else ""
         item_context['question_html'] = question_text
         item_context['choices'] = starmap(lambda i, option: (
             "plus" if option.attrib['correct'] == 'true' else "minus",
-            option.text
+            escape_content_data(option.text)
         ), enumerate(question.find('./m:options', xmlns).findall('./m:option', xmlns)))
         manifest_context['interaction_type'] = 'choiceInteraction'
         manifest_context['resource_href'] = item_context['assessment_identifier'] + ".xml"
@@ -83,7 +83,7 @@ class QuestionHandlers:
             item_context['responses_map'][response_identifier] = list(map(lambda x:x.text,
                                                                           fill.findall('./m:alt', xmlns)))
             fill_in_text += f'<textEntryInteraction responseIdentifier="{response_identifier}"/>'
-            fill_in_text += fill.tail  # following text
+            fill_in_text += fill.tail or ""  # following text
         item_context['fill_in_html'] = fill_in_text
 
         self.items_map[item_context['assessment_identifier']] = QuestionFragments(

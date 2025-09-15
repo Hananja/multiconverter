@@ -2,12 +2,12 @@
 <questions xmlns="https://github.com/Hananja/multiconverter">
 
   <multiple-choice-question>
-    <text>Welche dieser Programmiersprachen sind interpretierte Sprachen?</text>
+    <text>Welche Aussage ist korrekt?</text>
     <options>
-      <option correct="true">Python</option>
-      <option correct="true">JavaScript</option>
-      <option correct="false">C</option>
-      <option correct="false">C++</option>
+      <option correct="true">P(E) = 0 für das unmögliche Ereignis</option>
+      <option correct="false">P(E) = 1 für das unmögliche Ereignis</option>
+      <option correct="false">P(E) &lt; 0 ist zulässig</option>
+      <option correct="false">P(E) kann größer als 1 sein</option>
     </options>
   </multiple-choice-question>
 
