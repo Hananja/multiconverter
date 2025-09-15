@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multiconverter"
-version = "0.5.0"
+version = "0.5.1"
 description = "Toolchain von großen Sprachmodellen zu Tests in itslearning"
 readme = "README.md"
 authors = [
