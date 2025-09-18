@@ -36,6 +36,10 @@ endwhile
 
 |Texteditor|
 :review XML file;
+note right
+    delete or correct
+    generated questions
+end note
 |multiconverter|
 :XML]
 :run to convert to QTI;
