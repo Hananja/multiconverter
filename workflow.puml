@@ -1,0 +1,47 @@
+@startuml
+
+
+|multiconverter|
+start
+:run w/o parameters;
+|AI LLM|
+:XSD+Prompt]
+note right
+  Forces the LLM to
+  output XML according
+   to the XSD
+end note
+:handle prompt;
+|multiconverter|
+:XML]
+:check XML with XSD;
+while (XML correct?) is (no)
+      |AI LLM|
+      :error prompt]
+      :correct error;
+    note right
+        repeat until LLM
+        outputs correct XML
+
+        TODO: automating
+        this through direct
+        communication with
+        the LLM via API (w/ GUI?)
+    end note
+     |multiconverter|
+:XML]
+    :check XML with XSD;
+endwhile
+|multiconverter|
+
+|Texteditor|
+:review XML file;
+|multiconverter|
+:XML]
+:run to convert to QTI;
+|itslearning|
+:ZIP]
+:import;
+stop
+
+@enduml
