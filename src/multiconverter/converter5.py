@@ -91,7 +91,7 @@ class QuestionHandlers:
             manifest_text=jinja_env.get_template("imsmanifest_resource.xml.jinja").render(**manifest_context),
         )
 
-    question_handlers_map = {  # tag: func
+    question_handlers_map = {  # xml-tag: func
         "multiple-choice-question": handle_multiple_choice_question,
         "fill-in-question": handle_fill_in_question,
     }
