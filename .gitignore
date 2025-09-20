@@ -79,3 +79,4 @@ dmypy.json
 # Apple
 .DS_Store
 TODO
+poetry.lock
