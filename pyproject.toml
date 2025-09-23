@@ -22,7 +22,7 @@ Homepage = "https://github.com/hananja/multiconverter"
 Repository = "https://github.com/hananja/multiconverter"
 
 [project.scripts]
-multiconverter = "multiconverter.converter5:main"
+multiconverter = "multiconverter.__main__:main"
 
 [tool.setuptools]
 include-package-data = true  # Wichtig für package-data!
