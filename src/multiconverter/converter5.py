@@ -40,7 +40,6 @@ class QuestionHandlers:
 
     def handle_multiple_choice_question(self, question):
         item_context, manifest_context = self._prepare_context()
-        item_context['assessment_identifier'] , manifest_context['resource_identifier'] = self._get_identifiers()
         if 1 == sum(1 for option in question.find('./m:options', xmlns) if option.attrib['correct'] == 'true'):
             item_context['cardinality'] = "single"
             item_context['max_choices'] = "1"
