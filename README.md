@@ -3,6 +3,12 @@ Converter tool from LLM output to QTI itslearning test.
 
 # Installation
 
+with [`pipx`](https://pipx.pypa.io) (recommended):
+
+```
+pipx install git+https://github.com/Hananja/multiconverter.git
+```
+with plain old pip:
 ```
 python -m pip install git+https://github.com/Hananja/multiconverter.git
 ```
@@ -13,11 +19,6 @@ Installation with virtual environment for non admins:
 python -c "import venv,subprocess,os; d='multiconverter_venv'; venv.create(d, with_pip=True); py=os.path.join(d, 'Scripts' if os.name=='nt' else 'bin', 'python'); subprocess.check_call([py,'-m','pip','install','git+https://github.com/Hananja/multiconverter'])"
 ```
 
-or use [`pipx`](https://pipx.pypa.io):
-
-```
-pipx install git+https://github.com/Hananja/multiconverter.git
-```
 
 # Run commandline app
 
@@ -41,10 +42,8 @@ Die Ausgabe soll ausschließlich im XML Format erfolgen und der folgenden XSD ge
 Erstelle ein Beispieldokument mit je zwei Fragen pro Fragetyp
 ```
 
-
-Es ist empfehlenswert, zunächst die gesamte erzeugte XML Datei zu verarbeiten,
-weil bei eventuellen Fehlern der KI eine Fehlermeldung ausgegeben wird, die das
-LLM auffordert, die Ausgabe zu korrigieren:
+It is recommended to process the entire generated XML file first, because if the AI encounters any errors, an error
+message will be issued prompting the LLM to correct the output:
 
 ```
 $ ./bin/python -m multiconverter output.zip test_raw.xml 
@@ -55,5 +54,50 @@ Message to LLM:  ----------------------------------
 Überleg noch einmal: Das Dokument entspricht nicht der XSD. Der Parser liefert den Fehler "XML-Syntax-Fehler: StartTag: invalid element name, line 141, column 37 (test_raw.xml, line 141)".
 ```
 
-Wenn die Kommunikation mit dem LLM nach mehreren Iterationen fehlerfrei funktioniert hat, können die XML
-Dateien editiert und angepasst werden (z. B. durch Löschen von Fragen).
+If communication with the LLM has worked without errors after several iterations, the XML files can be edited and
+adjusted (e.g., by deleting questions).
+
+# Supported question types
+
+# single and multiple choice
+```xml
+<multiple-choice-question xmlns="https://github.com/Hananja/multiconverter">
+    <text>Was bedeutet WWW?</text>
+    <options>
+        <option correct="false">Willy will's wissen</option>
+        <option correct="false">Wow, wie wichtig</option>
+        <option correct="true">World Wide Web</option>
+        <option correct="false">Wo? Wer? Wann?</option>
+    </options>
+</multiple-choice-question>
+```
+
+# fill in text
+```xml
+<fill-in-question xmlns="https://github.com/Hananja/multiconverter">
+    <text>Für jedes Ereignis, das weder sicher noch unmöglich ist, gilt: </text>
+    <fill-in-text><fill><alt>0</alt></fill> &lt; P(E) &lt; <fill><alt>1</alt></fill> für
+        die Wahrscheinlichkeit des Ereignisses</fill-in-text>
+</fill-in-question>
+```
+
+# map items
+```xml
+<map-question xmlns="https://github.com/Hananja/multiconverter">
+    <text>Match the pairs.</text>
+    <mappings>
+        <mapping>
+            <left>1 + 1</left>
+            <right>2</right>
+        </mapping>
+        <mapping>
+            <left>2 + 2</left>
+            <right>4</right>
+        </mapping>
+        <mapping>
+            <left>3 + 5</left>
+            <right>8</right>
+        </mapping>
+    </mappings>
+</map-question>
+```
