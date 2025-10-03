@@ -59,7 +59,7 @@ adjusted (e.g., by deleting questions).
 
 # Supported question types
 
-# single and multiple choice
+## single and multiple choice
 ```xml
 <multiple-choice-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Was bedeutet WWW?</text>
@@ -72,7 +72,7 @@ adjusted (e.g., by deleting questions).
 </multiple-choice-question>
 ```
 
-# fill in text
+## fill in text
 ```xml
 <fill-in-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Für jedes Ereignis, das weder sicher noch unmöglich ist, gilt: </text>
@@ -81,7 +81,7 @@ adjusted (e.g., by deleting questions).
 </fill-in-question>
 ```
 
-# map items
+## map items
 ```xml
 <map-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Match the pairs.</text>
