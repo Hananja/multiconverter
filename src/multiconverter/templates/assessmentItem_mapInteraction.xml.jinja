@@ -4,29 +4,31 @@
         identifier="{{ assessment_identifier }}" title="{{ title }}" adaptive="false" timeDependent="false"
         toolName="itslearning" toolVersion="2025.10" xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:qti="http://www.imsglobal.org/xsd/imsqti_v2p1">
-{% set LEFT_FORMAT = "L%02d" %}
-{% set RIGHT_FORMAT = "R%02d" %}
+{% set LEFT_FORMAT = "L{:02d}" %}
+{% set RIGHT_FORMAT = "R{:02d}" %}
     <responseDeclaration cardinality="multiple" baseType="directedPair" identifier="RESPONSE">
         <correctResponse>
             {% for i in range( choice_count ) %}
-                <value>{{ i | format(LEFT_FORMAT) }} {{ i | format(RIGHT_FORMAT) }}</value>
+                <value>{{ LEFT_FORMAT.format(i) }} {{ RIGHT_FORMAT.format(i) }}</value>
             {% endfor %}
         </correctResponse>
         <mapping lowerBound="0" upperBound="1" defaultValue="0">
             {% for i in range( choice_count ) %}
-                <mapEntry mapKey="{{ i | format(LEFT_FORMAT) }} {{ i | format(RIGHT_FORMAT) }}" mappedValue="0.25" />
+                <mapEntry mapKey="{{ LEFT_FORMAT.format(i) }} {{ RIGHT_FORMAT.format(i) }}" mappedValue="0.25" />
             {% endfor %}
         </mapping>
     </responseDeclaration>
-    <outcomeDeclaration cardinality="single" baseType="identifier" identifier="FEEDBACK" view="" normalMaximum="0" normalMinimum="0" masteryValue="0" />
+    <outcomeDeclaration cardinality="single" baseType="identifier" identifier="FEEDBACK" view=""
+                        normalMaximum="0" normalMinimum="0" masteryValue="0" />
     <itemBody>
         <div class="htmlContent">
             <![CDATA[ {{ question_html }} ]]>
         </div>
-        <matchInteraction responseIdentifier="RESPONSE" shuffle="true" maxAssociations="{{ choice_count }}" minAssociations="0">
+        <matchInteraction responseIdentifier="RESPONSE" shuffle="true"
+                          maxAssociations="{{ choice_count }}" minAssociations="0">
             <simpleMatchSet>
                 {% for i, choice_html in left_choices %}
-                <simpleAssociableChoice fixed="false" showHide="show" identifier="{{ i | format(LEFT_FORMAT) }}"
+                <simpleAssociableChoice fixed="false" showHide="show" identifier="{{ LEFT_FORMAT.format(i) }}"
                                         matchMax="1" matchMin="0">
                     <div class="htmlContent">
                         <![CDATA[{{ choice_html }}]]>
@@ -36,7 +38,7 @@
             </simpleMatchSet>
             <simpleMatchSet>
                 {% for i, choice_html in right_choices %}
-                <simpleAssociableChoice fixed="false" showHide="show" identifier="{{ i | format(RIGHT_FORMAT) }}"
+                <simpleAssociableChoice fixed="false" showHide="show" identifier="{{ RIGHT_FORMAT.format(i) }}"
                                         matchMax="1" matchMin="0">
                     <div class="htmlContent">
                         <![CDATA[{{ choice_html }}]]>

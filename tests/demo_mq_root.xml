@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map-question xmlns="https://github.com/Hananja/multiconverter">
+  <text>Ordne die Paare zu.</text>
+  <mappings>
+    <mapping>
+      <left>1 + 1</left>
+      <right>2</right>
+    </mapping>
+    <mapping>
+      <left>2 + 2</left>
+      <right>4</right>
+    </mapping>
+    <mapping>
+      <left>3 + 5</left>
+      <right>8</right>
+    </mapping>
+  </mappings>
+</map-question>

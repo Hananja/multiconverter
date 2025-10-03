@@ -11,6 +11,7 @@
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:element ref="multiple-choice-question"/>
                     <xs:element ref="fill-in-question"/>
+                    <xs:element ref="map-question" />
                 </xs:choice>
             </xs:sequence>
         </xs:complexType>
@@ -67,6 +68,32 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <!-- This question type first has an explanatory text contained in the <text> element. This is followed by a list of <mapping> elements in the <mappings> element, each of which contains related texts in the <left> and <right> elements. Example: <map-question><text>Match the pairs.</text><mappings><mapping><left>1+1</left><right>=2</right></mapping><mapping><left>2+2</left><right>=4</right></mapping></mappings></map-question>  -->
+    <xs:element name="map-question">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Explanatory text -->
+        <xs:element name="text" type="xs:string"/>
+        <!-- Container for one or more mappings -->
+        <xs:element name="mappings">
+          <xs:complexType>
+            <xs:sequence>
+              <!-- Each mapping has exactly one left and one right -->
+              <xs:element name="mapping" minOccurs="2" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="left" type="xs:string"/>
+                    <xs:element name="right" type="xs:string"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
 </xs:schema>
 

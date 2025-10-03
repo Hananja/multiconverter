@@ -10,6 +10,7 @@ class TestConverter(unittest.TestCase):
         # Wird vor jedem Test ausgeführt
         self.test_files = [ # (Filename, Exitcode)
             ("demo.xml", 0),
+            ("demo_mq_root.xml", 0),
             ("demo_mcq_root.xml", 0),
             ("demo_fiq_root.xml", 0),
             ("demo_err.xml", 1),

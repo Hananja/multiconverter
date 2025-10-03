@@ -39,7 +39,7 @@ class QuestionHandlers:
         self.items_map : dict[str, QuestionFragments] = {} # key is id
 
     def handle_multiple_choice_question(self, question):
-        item_context, manifest_context = {}, {}
+        item_context, manifest_context = self._prepare_context()
         item_context['assessment_identifier'] , manifest_context['resource_identifier'] = self._get_identifiers()
         if 1 == sum(1 for option in question.find('./m:options', xmlns) if option.attrib['correct'] == 'true'):
             item_context['cardinality'] = "single"
@@ -58,17 +58,11 @@ class QuestionHandlers:
             escape_content_data(option.text)
         ), enumerate(question.find('./m:options', xmlns).findall('./m:option', xmlns)))
         manifest_context['interaction_type'] = 'choiceInteraction'
-        manifest_context['resource_href'] = item_context['assessment_identifier'] + ".xml"
 
-        self.items_map[item_context['assessment_identifier']] = QuestionFragments(
-            item_text=jinja_env.get_template("assessmentItem_choiceInteraction.xml.jinja").render(**item_context),
-            manifest_text=jinja_env.get_template("imsmanifest_resource.xml.jinja").render(**manifest_context),
-        )
+        self._add_item(item_context, manifest_context, "choiceInteraction")
 
     def handle_fill_in_question(self, question):
-        item_context, manifest_context = {}, {}
-        item_context['assessment_identifier'] , manifest_context['resource_identifier'] = self._get_identifiers()
-        manifest_context['resource_href'] = item_context['assessment_identifier'] + ".xml"
+        item_context, manifest_context = self._prepare_context()
         manifest_context['title'] = "FillInTheBlankText"
         manifest_context['interaction_type'] = 'textEntryInteraction'
         question_text = question.find('./m:text', xmlns).text if question.find('./m:text', xmlns) is not None else None
@@ -86,14 +80,39 @@ class QuestionHandlers:
             fill_in_text += fill.tail if fill.tail is not None else ""  # following text
         item_context['fill_in_html'] = escape_content_data(fill_in_text)
 
+        self._add_item(item_context, manifest_context, "textEntryInteraction")
+
+    def handle_map_question(self, question):
+        item_context, manifest_context = self._prepare_context()
+        item_context['title'] = "Matching"
+        manifest_context['title'] = item_context['title']
+        manifest_context['interaction_type'] = 'matchInteraction'
+        item_context['question_html'] = escape_content_data(question.find('./m:text', xmlns).text)
+        item_context['choice_count'] = len(question.findall('./m:mappings/m:mapping', xmlns))
+        item_context['left_choices'] = enumerate(map(
+            lambda x:x.text, question.findall('./m:mappings/m:mapping/m:left', xmlns)))
+        item_context['right_choices'] = enumerate(map(
+            lambda x: x.text, question.findall('./m:mappings/m:mapping/m:right', xmlns)))
+
+        self._add_item(item_context, manifest_context, "mapInteraction")
+
+    def _add_item(self, item_context, manifest_context, question_type_id):
         self.items_map[item_context['assessment_identifier']] = QuestionFragments(
-            item_text=jinja_env.get_template("assessmentItem_textEntryInteraction.xml.jinja").render(**item_context),
+            item_text=jinja_env.get_template(f"assessmentItem_{ question_type_id }.xml.jinja").render(**item_context),
             manifest_text=jinja_env.get_template("imsmanifest_resource.xml.jinja").render(**manifest_context),
         )
+
+    def _prepare_context(self):
+        item_context, manifest_context = {}, {}
+        item_context['assessment_identifier'] , manifest_context['resource_identifier'] = self._get_identifiers()
+        manifest_context['resource_href'] = item_context['assessment_identifier'] + ".xml"
+        return item_context, manifest_context
+
 
     question_handlers_map = {  # xml-tag: func
         "multiple-choice-question": handle_multiple_choice_question,
         "fill-in-question": handle_fill_in_question,
+        "map-question": handle_map_question,
     }
     def handle_question(self, question):
         self.question_handlers_map[get_local_tag(question)](self, question)
