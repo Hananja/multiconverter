@@ -50,17 +50,29 @@ class MultiConverterApp:
     def build_wizard(self):
         """Erstellt das Wizard-Interface"""
         return ft.Column([
-            ft.AppBar(
-                title=ft.Text("MultiConverter - Frage Generator"),
+            ft.Container(
+                content=ft.Text(
+                    "MultiConverter - Frage Generator",
+                    style=ft.TextThemeStyle.HEADLINE_LARGE,
+                    color=ft.Colors.WHITE
+                ),
                 bgcolor=ft.Colors.BLUE,
-                color=ft.Colors.WHITE
+                padding=20,
+                width=float('inf')
             ),
             ft.Container(
-                content=self.get_current_step_content(),
+                content=ft.Column([
+                    self.get_current_step_content()
+                ],
+                scroll=ft.ScrollMode.AUTO,
+                expand=True
+                ),
                 expand=True,
                 padding=20
             )
-        ])
+        ],
+        expand=True
+        )
 
     def get_current_step_content(self):
         """Gibt den Inhalt für den aktuellen Schritt zurück"""
@@ -131,7 +143,10 @@ class MultiConverterApp:
                     disabled=len(self.selected_question_types) == 0
                 )
             ])
-        ])
+        ],
+        scroll=ft.ScrollMode.ALWAYS,
+        expand=True
+        )
 
     def build_step2(self):
         """Schritt 2: XML Validierung"""
