@@ -91,7 +91,7 @@ def minimize_xsd_advanced(xml_string: str) -> str:
     return minimized_xml_bytes.decode('utf-8')
 
 
-if __name__ == "__main__":
+if __name__ == "__main__.py":
     # XSD-Datei einlesen (Pfad anpassen)
     input_path = "example.xsd"
     with open(input_path, "r", encoding="utf-8") as f:

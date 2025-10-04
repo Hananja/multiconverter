@@ -118,5 +118,5 @@ def main():
                 print(f"- {error}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__.py":
     main()

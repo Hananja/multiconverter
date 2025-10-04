@@ -15,6 +15,8 @@ requires-python = ">=3.10"
 dependencies = [
     "lxml>=6.0.1,<7.0",
     "Jinja2>=3.1.6,<4.0",
+    "flet>=0.25.0,<1.0",
+    "pyperclip>=1.8.0,<2.0",
 ]
 
 [project.urls]
@@ -23,6 +25,7 @@ Repository = "https://github.com/hananja/multiconverter"
 
 [project.scripts]
 multiconverter = "multiconverter.__main__:main"
+multiconverter-gui = "multiconverter.gui.__main__:main"
 
 [tool.setuptools]
 include-package-data = true  # Wichtig für package-data!

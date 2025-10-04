@@ -51,5 +51,5 @@ class TestConverter(unittest.TestCase):
             print(output) # TODO: check output
 
 
-if __name__ == '__main__':
+if __name__ == '__main__.py':
     unittest.main()
