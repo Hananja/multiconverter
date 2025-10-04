@@ -101,6 +101,42 @@ class XMLValidator:
     def get_invalid_documents(self, results: Dict[str, ValidationResult]) -> Dict[str, ET.Element]:
         return {fn: res.xml_content for fn, res in results.items() if not res.is_valid}
 
+    def validate_xml_string(self, xml_string: str) -> ValidationResult:
+        """Validiert einen XML-String"""
+        errors = []
+        xml_content = None
+        
+        try:
+            if not xml_string.strip():
+                errors.append((Error.XML_ERROR, "XML-String ist leer"))
+                return ValidationResult("xml_string", False, errors)
+
+        # Parse XML string with lxml
+            try:
+                xml_doc = etree.fromstring(xml_string.encode('utf-8'))
+            except etree.XMLSyntaxError as e:
+                errors.append((Error.XML_ERROR, f"XML-Syntax-Fehler: {e}"))
+                return ValidationResult("xml_string", False, errors)
+
+            if self.schema is None:
+                errors.append((Error.UNKNOWN_ERROR, "Kein XSD-Schema geladen"))
+                return ValidationResult("xml_string", False, errors)
+
+        # Validate against schema
+            is_valid = self.schema.validate(xml_doc)
+            if not is_valid:
+                for error in self.schema.error_log:
+                    errors.append((Error.XSD_ERROR, f"Zeile {error.line}: {error.message}"))
+            else:
+                # Convert to ElementTree format
+                xml_content = ET.fromstring(etree.tostring(xml_doc, encoding='unicode'))
+            
+            return ValidationResult("xml_string", is_valid, errors, xml_content)
+        
+        except Exception as e:
+            errors.append((Error.UNKNOWN_ERROR, f"Unerwarteter Fehler: {e}"))
+            return ValidationResult("xml_string", False, errors)
+
 
 # Beispielaufruf:
 def main():

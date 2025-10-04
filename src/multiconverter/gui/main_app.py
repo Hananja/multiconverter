@@ -291,7 +291,10 @@ class MultiConverterApp:
                 # Extrahiere Fragen aus dem XML
                 self.extract_questions_from_xml()
             else:
-                result_field.value = f"Validierungsfehler:\n{validation_result.error_message}"
+                error_messages = []
+                for error_type, error_message in validation_result.errors:
+                    error_messages.append(error_message)
+                result_field.value = f"Validierungsfehler:\n" + "\n".join(error_messages)
                 self.validated_questions = []
         except Exception as e:
             result_field.value = f"Fehler bei der Validierung: {str(e)}"
