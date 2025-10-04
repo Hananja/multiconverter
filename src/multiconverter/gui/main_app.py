@@ -167,33 +167,36 @@ class MultiConverterApp:
             max_lines=10
         )
 
+        # Button-Referenz für spätere Updates speichern
+        self.next_button_step2 = ft.ElevatedButton(
+            "Weiter",
+            on_click=lambda _: self.next_step(),
+            disabled=not self.validated_questions
+        )
+
         return ft.Column([
             ft.Text("Schritt 2: XML Validierung", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             xml_input,
             ft.Row([
                 ft.ElevatedButton(
                     "Validieren",
-                    on_click=lambda _: self.validate_xml(validation_result),
+                    on_click=lambda _: self.validate_xml_and_update_button(validation_result),
                     icon=ft.Icons.CHECK_CIRCLE
                 ),
+            ]),
+            validation_result,
+            ft.Row([
                 ft.ElevatedButton(
                     "Copy to Clipboard",
                     on_click=lambda _: self.copy_to_clipboard(validation_result.value),
                     icon=ft.Icons.COPY,
                     disabled=not validation_result.value
-                )
-            ]),
-            validation_result,
-            ft.Row([
+                ),
                 ft.ElevatedButton(
                     "Zurück",
                     on_click=lambda _: self.previous_step()
                 ),
-                ft.ElevatedButton(
-                    "Weiter",
-                    on_click=lambda _: self.next_step(),
-                    disabled=not self.validated_questions
-                )
+                self.next_button_step2
             ])
         ])
 
@@ -379,3 +382,37 @@ class MultiConverterApp:
     def run(self):
         """Startet die Applikation"""
         pass
+
+    def validate_xml_and_update_button(self, result_field: ft.TextField):
+        """Validiert das eingegebene XML und aktualisiert den Button"""
+        if not self.xml_output.strip():
+            result_field.value = "Bitte geben Sie XML-Code ein"
+            self.page.update()
+            return
+
+        try:
+            validation_result = self.xml_validator.validate_xml_string(self.xml_output)
+            if validation_result.is_valid:
+                result_field.value = "XML ist gültig!"
+                # Extrahiere Fragen aus dem XML
+                self.extract_questions_from_xml()
+                # Button aktivieren
+                if hasattr(self, 'next_button_step2'):
+                    self.next_button_step2.disabled = False
+            else:
+                error_messages = []
+                for error_type, error_message in validation_result.errors:
+                    error_messages.append(error_message)
+                result_field.value = f"Validierungsfehler:\n" + "\n".join(error_messages)
+                self.validated_questions = []
+                # Button deaktivieren
+                if hasattr(self, 'next_button_step2'):
+                    self.next_button_step2.disabled = True
+        except Exception as e:
+            result_field.value = f"Fehler bei der Validierung: {str(e)}"
+            self.validated_questions = []
+            # Button deaktivieren
+            if hasattr(self, 'next_button_step2'):
+                self.next_button_step2.disabled = True
+
+        self.page.update()

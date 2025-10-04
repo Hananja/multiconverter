@@ -2,10 +2,17 @@
 """
 Editor für einzelne Fragen mit XML Syntax-Highlighting und Validierung
 """
+import os
+
 import flet as ft
 import xml.etree.ElementTree as ET
 from typing import List, Callable, Any
 from ..xml_validator import XMLValidator
+
+# Template-Verzeichnis relativ zum Skript finden
+script_dir = os.path.dirname(os.path.abspath(__file__))
+xsd_path = os.path.join(script_dir, "../xml/llmquestions.xsd")
+
 
 class QuestionEditorView:
     def __init__(self, page: ft.Page, questions: List[Any],
@@ -15,7 +22,7 @@ class QuestionEditorView:
         self.on_question_processed = on_question_processed
         self.on_all_processed = on_all_processed
         self.current_question_index = 0
-        self.xml_validator = XMLValidator()
+        self.xml_validator = XMLValidator(xsd_path)
 
     def build(self):
         """Erstellt die Editor-Ansicht"""
@@ -42,14 +49,14 @@ class QuestionEditorView:
                 ft.ElevatedButton(
                     "Sichern",
                     on_click=lambda _: self.save_question(editor_field.value),
-                    icon=ft.icons.SAVE,
-                    color=ft.colors.GREEN
+                    icon=ft.Icons.SAVE,
+                    color=ft.Colors.GREEN
                 ),
                 ft.ElevatedButton(
                     "Verwerfen",
                     on_click=lambda _: self.discard_question(),
-                    icon=ft.icons.DELETE,
-                    color=ft.colors.RED
+                    icon=ft.Icons.DELETE,
+                    color=ft.Colors.RED
                 )
             ])
         ])
