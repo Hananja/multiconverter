@@ -348,7 +348,15 @@ class MultiConverterApp:
 
     def show_snackbar(self, message: str):
         """Zeigt eine Snackbar-Nachricht"""
-        self.page.show_snack_bar(ft.SnackBar(content=ft.Text(message)))
+        try:
+            snackbar = ft.SnackBar(
+                content=ft.Text(message),
+                open=True
+            )
+            self.page.snack_bar = snackbar
+            self.page.update()
+        except Exception as e:
+            print(f"Fehler beim Anzeigen der Snackbar: {e}")
 
     def run(self):
         """Startet die Applikation"""
