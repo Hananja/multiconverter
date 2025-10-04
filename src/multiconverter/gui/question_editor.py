@@ -67,9 +67,10 @@ class QuestionEditorView:
             # Validiere das bearbeitete XML
             validation_result = self.xml_validator.validate_xml_string(xml_content)
             if not validation_result.is_valid:
-                self.page.show_snack_bar(
-                    ft.SnackBar(content=ft.Text(f"XML Fehler: {validation_result.error_message}"))
-                )
+                snack_bar = ft.SnackBar(content=ft.Text(f"XML Fehler: {validation_result.error_message}"))
+                self.page.overlay.append(snack_bar)
+                snack_bar.open = True
+                self.page.update()
                 return
 
             # Parse das XML
@@ -78,9 +79,10 @@ class QuestionEditorView:
             self.next_question()
 
         except Exception as e:
-            self.page.show_snack_bar(
-                ft.SnackBar(content=ft.Text(f"Fehler beim Sichern: {str(e)}"))
-            )
+            snack_bar = ft.SnackBar(content=ft.Text(f"Fehler beim Sichern: {str(e)}"))
+            self.page.overlay.append(snack_bar)
+            snack_bar.open = True
+            self.page.update()
 
     def discard_question(self):
         """Verwirft die aktuelle Frage"""
