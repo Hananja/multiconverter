@@ -182,5 +182,5 @@ def handle_error(validation_results):
                     die(error_message)
 
 
-if __name__ == '__main__.py':
+if __name__ == '__main__':
     main(sys.argv)
