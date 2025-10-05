@@ -13,6 +13,7 @@ from ..xml_validator import XMLValidator
 script_dir = os.path.dirname(os.path.abspath(__file__))
 xsd_path = os.path.join(script_dir, "../xml/llmquestions.xsd")
 
+ET.register_namespace("", "https://github.com/Hananja/multiconverter")
 
 class QuestionEditorView:
     def __init__(self, page: ft.Page, questions: List[Any],

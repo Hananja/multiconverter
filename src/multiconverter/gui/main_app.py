@@ -41,6 +41,10 @@ class MultiConverterApp:
 
         # UI Komponenten
         self.current_step = 1
+        self.save_file_picker = ft.FilePicker(
+            on_result=self.save_file_result
+        )
+        self.page.overlay.append(self.save_file_picker)
         self.setup_ui()
 
     def setup_ui(self):
@@ -332,11 +336,24 @@ class MultiConverterApp:
     def save_zip_archive(self):
         """Speichert ZIP Archiv"""
         try:
-            zip_data = self.question_handlers.get_zip()
-            # Hier würde normalerweise ein Dateidialog geöffnet
-            self.show_snackbar("ZIP Archiv Speicherung nicht implementiert")
+            self.zip_data = self.question_handlers.get_zip()
+            # Dateidialog öffnen
+            self.save_file_picker.save_file(
+                file_name="questions.zip",
+                allowed_extensions=["zip"]
+            )
         except Exception as e:
             self.show_snackbar(f"Fehler beim Erstellen des ZIP Archivs: {str(e)}")
+
+    def save_file_result(self, e: ft.FilePickerResultEvent):
+        """Verarbeitet das Ergebnis der Dateispeicherung"""
+        if e.path:
+            try:
+                with open(e.path, 'wb') as f:
+                    f.write(self.zip_data)
+                self.show_snackbar(f"ZIP Archiv erfolgreich gespeichert: {e.path}")
+            except Exception as err:
+                self.show_snackbar(f"Fehler beim Speichern: {str(err)}")
 
     def restart_wizard(self):
         """Startet einen neuen Wizard-Durchlauf"""
@@ -375,9 +392,12 @@ class MultiConverterApp:
                 open=True
             )
             self.page.snack_bar = snackbar
+            self.page.overlay.append(snackbar)
             self.page.update()
         except Exception as e:
             print(f"Fehler beim Anzeigen der Snackbar: {e}")
+
+
 
     def run(self):
         """Startet die Applikation"""
