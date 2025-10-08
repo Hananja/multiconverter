@@ -11,11 +11,16 @@ import os
 from pathlib import Path
 from lxml import etree
 
+from build.lib.multiconverter.tools import minimize_xsd_advanced
 from ..converter5 import QuestionHandlers
 from ..xml_validator import XMLValidator
-from ..tools import get_local_tag
 from .question_editor import QuestionEditorView
-from .xml_display import XMLDisplayWidget
+
+DEBUG = True
+def visible_debug_only(control: ft.Control) -> ft.Control:
+    """Hilfsfunktion um Debug-Only Controls zu erstellen"""
+    control.visible = DEBUG
+    return control
 
 
 # Template-Verzeichnis relativ zum Skript finden
@@ -32,7 +37,7 @@ class MultiConverterApp:
         self.page.theme_mode = ft.ThemeMode.LIGHT
 
         # Datenstrukturen
-        self.selected_question_types = set()
+        self.selected_question_types = set(QuestionHandlers.get_question_types())
         self.custom_prompt = ""
         self.xml_output = ""
         self.validated_questions = []
@@ -106,40 +111,40 @@ class MultiConverterApp:
             checkbox = ft.Checkbox(
                 label=label,
                 value=key in self.selected_question_types,
-                on_change=lambda e, qtype=key: self.toggle_question_type(qtype, e.control.value)
+                on_change=lambda e, qtype=key: self.toggle_question_type(qtype, e.control.value),
             )
             checkboxes.append(checkbox)
 
         prompt_field = ft.TextField(
-            label="Benutzerdefinierter Prompt",
+            label="Prompt zu den Details der Fragen",
             multiline=True,
-            min_lines=3,
+            min_lines=4,
             max_lines=8,
             value=self.custom_prompt,
-            on_change=lambda e: setattr(self, 'custom_prompt', e.control.value)
+            on_change=lambda e: self.set_custom_prompt(e.control.value)
         )
 
-        output_field = ft.TextField(
+        self.output_field = ft.TextField(
             label="Generierter Prompt mit XSD",
             multiline=True,
             read_only=True,
-            min_lines=10,
-            max_lines=15,
+            min_lines=4,
+            max_lines=5,
             value=self.generate_prompt_with_xsd()
         )
 
-        return ft.Column([
-            ft.Text("Schritt 1: Fragetypen auswählen", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+        col_controls = [
+            ft.Text("Schritt 1: Fragetypen auswählen und Prompt eingeben", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
             ft.Text("Wählen Sie die gewünschten Fragetypen aus:"),
             ft.Column(checkboxes),
             ft.Divider(),
             prompt_field,
-            ft.Divider(),
-            output_field,
+            visible_debug_only(ft.Divider()),
+            visible_debug_only(self.output_field),
             ft.Row([
                 ft.ElevatedButton(
-                    "Copy to Clipboard",
-                    on_click=lambda _: self.copy_to_clipboard(output_field.value),
+                    "Kopieren (Zwischenablage)",
+                    on_click=lambda _: self.copy_to_clipboard(self.output_field.value),
                     icon=ft.Icons.COPY
                 ),
                 ft.ElevatedButton(
@@ -147,11 +152,10 @@ class MultiConverterApp:
                     on_click=lambda _: self.next_step(),
                     disabled=len(self.selected_question_types) == 0
                 )
-            ])
-        ],
-        scroll=ft.ScrollMode.ALWAYS,
-        expand=True
-        )
+            ])]
+        return ft.Column(col_controls,
+                         scroll=ft.ScrollMode.ALWAYS,
+                         expand=True )
 
     def build_step2(self):
         """Schritt 2: XML Validierung"""
@@ -255,17 +259,23 @@ class MultiConverterApp:
             self.selected_question_types.add(question_type)
         else:
             self.selected_question_types.discard(question_type)
-        self.update_step1()
+        self.update_prompt_with_xsd()
+
+    def update_prompt_with_xsd(self):
+        """Aktualisiert das Prompt-Feld mit der generierten XSD"""
+        if self.current_step == 1:
+            if self.output_field:
+                self.output_field.value = self.generate_prompt_with_xsd()
+                self.page.update()
 
     def generate_prompt_with_xsd(self) -> str:
         """Generiert den Prompt mit XSD und extrahiert nur die relevanten Teile basierend auf den ausgewählten Fragetypen"""
         if not self.selected_question_types:
             return ""
 
-        xsd_path = Path(__file__).parent.parent / "xml" / "llmquestions.xsd"
         try:
             # Parse XSD mit lxml
-            parser = etree.XMLParser(remove_comments=True)
+            parser = etree.XMLParser(remove_comments=False)
             tree = etree.parse(str(xsd_path), parser)
             root = tree.getroot()
 
@@ -287,9 +297,9 @@ class MultiConverterApp:
             prompt = f"Erstelle Fragen der Typen: {selected_types}\n\n"
             if self.custom_prompt:
                 prompt += f"Zusätzlicher Prompt:\n{self.custom_prompt}\n\n"
-            prompt += f"Relevante XSD Schema-Definitionen:\n{xsd_content}"
+            prompt += f"Relevante XSD Schema-Definitionen:\n{minimize_xsd_advanced(xsd_content)}"
 
-            return prompt
+            return prompt + 2*"\n"
 
         except OSError as e:
             xsd_content = f"Fehler beim Verarbeiten der XSD: {str(e)}"
@@ -392,11 +402,6 @@ class MultiConverterApp:
         self.current_step -= 1
         self.update_ui()
 
-    def update_step1(self):
-        """Aktualisiert Schritt 1"""
-        if self.current_step == 1:
-            self.update_ui()
-
     def update_ui(self):
         """Aktualisiert die gesamte UI"""
         self.page.clean()
@@ -455,3 +460,7 @@ class MultiConverterApp:
                 self.next_button_step2.disabled = True
 
         self.page.update()
+
+    def set_custom_prompt(self, value : str):
+        self.custom_prompt = value
+        self.update_prompt_with_xsd()
