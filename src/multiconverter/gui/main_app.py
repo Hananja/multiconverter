@@ -182,7 +182,7 @@ class MultiConverterApp:
         )
 
         return ft.Column([
-            ft.Text("Schritt 2: XML Validierung", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+            ft.Text("Schritt 2: XML Validierung"),
             self.xml_output_field,
             ft.Row([
                 ft.ElevatedButton(
@@ -214,7 +214,13 @@ class MultiConverterApp:
     def build_step3(self):
         """Schritt 3: Fragen bearbeiten"""
         if not self.validated_questions:
-            return ft.Text("Keine validierten Fragen verfügbar")
+            return ft.Column([
+                ft.Text("Keine validierten Fragen verfügbar"),
+                ft.ElevatedButton(
+                    "Zurück",
+                    on_click=lambda _: self.previous_step()
+                )
+            ])
 
         return QuestionEditorView(
             self.page,

@@ -18,6 +18,7 @@ ET.register_namespace("", "https://github.com/Hananja/multiconverter")
 class QuestionEditorView:
     def __init__(self, page: ft.Page, questions: List[Any],
                  on_question_processed: Callable, on_all_processed: Callable):
+        self.editor_field = None
         self.page = page
         self.questions = questions
         self.on_question_processed = on_question_processed
@@ -30,26 +31,21 @@ class QuestionEditorView:
         if not self.questions:
             return ft.Text("Keine Fragen zum Bearbeiten verfügbar")
 
-        question = self.questions[self.current_question_index]
-        question_xml = ET.tostring(question, encoding='unicode')
-
-        editor_field = ft.TextField(
-            label=f"Frage {self.current_question_index + 1} von {len(self.questions)}",
+        self.editor_field = ft.TextField(
             multiline=True,
-            min_lines=15,
+            min_lines=10,
             max_lines=20,
-            value=question_xml,
             expand=True
         )
+        self.update_editor_field()
 
         return ft.Column([
-            ft.Text("Schritt 3: Fragen bearbeiten", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-            ft.Text(f"Bearbeiten Sie die Frage {self.current_question_index + 1} von {len(self.questions)}:"),
-            editor_field,
+            ft.Text("Schritt 3: Fragen bearbeiten:"),
+            self.editor_field,
             ft.Row([
                 ft.ElevatedButton(
                     "Sichern",
-                    on_click=lambda _: self.save_question(editor_field.value),
+                    on_click=lambda _: self.save_question(self.editor_field.value),
                     icon=ft.Icons.SAVE,
                     color=ft.Colors.GREEN
                 ),
@@ -68,7 +64,8 @@ class QuestionEditorView:
             # Validiere das bearbeitete XML
             validation_result = self.xml_validator.validate_xml_string(xml_content)
             if not validation_result.is_valid:
-                snack_bar = ft.SnackBar(content=ft.Text(f"XML Fehler: {validation_result.error_message}"))
+                snack_bar = ft.SnackBar(content=ft.Text(f"XML Fehler: " + os.linesep.join(
+                    map(lambda x:x[1], validation_result.errors))))
                 self.page.overlay.append(snack_bar)
                 snack_bar.open = True
                 self.page.update()
@@ -79,7 +76,7 @@ class QuestionEditorView:
             self.on_question_processed(question, "save")
             self.next_question()
 
-        except Exception as e:
+        except OSError as e:
             snack_bar = ft.SnackBar(content=ft.Text(f"Fehler beim Sichern: {str(e)}"))
             self.page.overlay.append(snack_bar)
             snack_bar.open = True
@@ -96,6 +93,14 @@ class QuestionEditorView:
         if self.current_question_index >= len(self.questions):
             self.on_all_processed()
         else:
-            self.page.clean()
-            self.page.add(self.build())
+            self.update_editor_field()
+
+    def update_editor_field(self):
+        """Aktualisiert das Editor-Feld mit dem aktuellen XML-Inhalt"""
+        if self.editor_field:
+            question = self.questions[self.current_question_index]
+            question_xml = ET.tostring(question, encoding='unicode')
+            self.editor_field.value = question_xml
+            self.editor_field.label = f"Frage {self.current_question_index + 1} von {len(self.questions)}"
             self.page.update()
+
