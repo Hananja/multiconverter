@@ -113,6 +113,11 @@ class QuestionHandlers:
         "fill-in-question": handle_fill_in_question,
         "map-question": handle_map_question,
     }
+
+    @classmethod
+    def get_question_types(cls):
+        return list(cls.question_handlers_map.keys())
+
     def handle_question(self, question):
         self.question_handlers_map[get_local_tag(question)](self, question)
 

@@ -9,6 +9,7 @@ from typing import List, Dict, Any
 import io
 import os
 from pathlib import Path
+from lxml import etree
 
 from ..converter5 import QuestionHandlers
 from ..xml_validator import XMLValidator
@@ -257,24 +258,42 @@ class MultiConverterApp:
         self.update_step1()
 
     def generate_prompt_with_xsd(self) -> str:
-        """Generiert den Prompt mit XSD"""
+        """Generiert den Prompt mit XSD und extrahiert nur die relevanten Teile basierend auf den ausgewählten Fragetypen"""
         if not self.selected_question_types:
             return ""
 
         xsd_path = Path(__file__).parent.parent / "xml" / "llmquestions.xsd"
         try:
-            with open(xsd_path, 'r', encoding='utf-8') as f:
-                xsd_content = f.read()
-        except FileNotFoundError:
-            xsd_content = "XSD Datei nicht gefunden"
+            # Parse XSD mit lxml
+            parser = etree.XMLParser(remove_comments=True)
+            tree = etree.parse(str(xsd_path), parser)
+            root = tree.getroot()
 
-        selected_types = ", ".join(self.selected_question_types)
-        prompt = f"Erstelle Fragen der Typen: {selected_types}\n\n"
-        if self.custom_prompt:
-            prompt += f"Zusätzlicher Prompt:\n{self.custom_prompt}\n\n"
-        prompt += f"XSD Schema:\n{xsd_content}"
+            # Namespace für XSD
+            ns = {"xs": "http://www.w3.org/2001/XMLSchema"}
 
-        return prompt
+            # remove all elements except those in selected_question_types
+            for question_type in QuestionHandlers.get_question_types():
+                for xpath in [ f".//xs:element[@ref='{question_type}']", f".//xs:element[@name='{question_type}']" ]:
+                    question_element = root.xpath(xpath, namespaces=ns)
+                    assert len(question_element) == 1
+                    if question_type not in self.selected_question_types:
+                        parent = question_element[0].getparent()
+                        parent.remove(question_element[0])
+
+            xsd_content = etree.tostring(root, pretty_print=True).decode()
+
+            selected_types = ", ".join(self.selected_question_types)
+            prompt = f"Erstelle Fragen der Typen: {selected_types}\n\n"
+            if self.custom_prompt:
+                prompt += f"Zusätzlicher Prompt:\n{self.custom_prompt}\n\n"
+            prompt += f"Relevante XSD Schema-Definitionen:\n{xsd_content}"
+
+            return prompt
+
+        except OSError as e:
+            xsd_content = f"Fehler beim Verarbeiten der XSD: {str(e)}"
+
 
     def copy_to_clipboard(self, text: str):
         """Kopiert Text in die Zwischenablage"""
