@@ -5,8 +5,6 @@ Hauptapplikationsklasse für die multiconverter GUI - Wizard-Style Interface
 import flet as ft
 import pyperclip
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any
-import io
 import os
 from pathlib import Path
 from lxml import etree
@@ -30,6 +28,7 @@ xsd_path = os.path.join(script_dir, "../xml/llmquestions.xsd")
 
 class MultiConverterApp:
     def __init__(self, page: ft.Page):
+        self.next_button_step2 = None
         self.page = page
         self.page.title = "MultiConverter GUI"
         self.page.window_width = 1200
@@ -40,6 +39,8 @@ class MultiConverterApp:
         self.selected_question_types = set(QuestionHandlers.get_question_types())
         self.custom_prompt = ""
         self.xml_output = ""
+        self.xml_output_field = None
+        self.validation_result_field = None
         self.validated_questions = []
         self.processed_questions = []
         self.question_handlers = QuestionHandlers()
@@ -129,17 +130,14 @@ class MultiConverterApp:
             multiline=True,
             read_only=True,
             min_lines=4,
-            max_lines=5,
+            max_lines=6,
             value=self.generate_prompt_with_xsd()
         )
 
         col_controls = [
-            ft.Text("Schritt 1: Fragetypen auswählen und Prompt eingeben", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-            ft.Text("Wählen Sie die gewünschten Fragetypen aus:"),
+            ft.Text("Schritt 1: Fragetypen auswählen und Prompt eingeben"),
             ft.Column(checkboxes),
-            ft.Divider(),
             prompt_field,
-            visible_debug_only(ft.Divider()),
             visible_debug_only(self.output_field),
             ft.Row([
                 ft.ElevatedButton(
@@ -159,21 +157,21 @@ class MultiConverterApp:
 
     def build_step2(self):
         """Schritt 2: XML Validierung"""
-        xml_input = ft.TextField(
-            label="XML Ausgabe des LLM",
+        self.xml_output_field = ft.TextField(
+            label="XML Ausgabe des LLM hier einfügen",
             multiline=True,
-            min_lines=15,
-            max_lines=20,
+            min_lines=3,
+            max_lines=8,
             value=self.xml_output,
-            on_change=lambda e: setattr(self, 'xml_output', e.control.value)
+            on_change = lambda _: self.update_new_xml_output()
         )
 
-        validation_result = ft.TextField(
+        self.validation_result_field = ft.TextField(
             label="Validierungsergebnis",
             multiline=True,
             read_only=True,
-            min_lines=5,
-            max_lines=10
+            min_lines=2,
+            max_lines=5,
         )
 
         # Button-Referenz für spätere Updates speichern
@@ -185,21 +183,25 @@ class MultiConverterApp:
 
         return ft.Column([
             ft.Text("Schritt 2: XML Validierung", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-            xml_input,
+            self.xml_output_field,
             ft.Row([
                 ft.ElevatedButton(
+                    "Einfügen (Zwischenablage)",
+                    on_click=lambda _: self.paste_from_clipboard(),
+                    icon=ft.Icons.PASTE
+                ),
+                ft.ElevatedButton(
                     "Validieren",
-                    on_click=lambda _: self.validate_xml_and_update_button(validation_result),
+                    on_click=lambda _: self.validate_xml_and_update_button(self.validation_result_field),
                     icon=ft.Icons.CHECK_CIRCLE
                 ),
             ]),
-            validation_result,
+            self.validation_result_field,
             ft.Row([
                 ft.ElevatedButton(
-                    "Copy to Clipboard",
-                    on_click=lambda _: self.copy_to_clipboard(validation_result.value),
+                    "Kopieren (Zwischenablage)",
+                    on_click=lambda _: self.copy_to_clipboard(self.validation_result_field.value),
                     icon=ft.Icons.COPY,
-                    disabled=not validation_result.value
                 ),
                 ft.ElevatedButton(
                     "Zurück",
@@ -268,6 +270,12 @@ class MultiConverterApp:
                 self.output_field.value = self.generate_prompt_with_xsd()
                 self.page.update()
 
+    def update_new_xml_output(self):
+        self.xml_output = self.xml_output_field.value
+        self.validation_result_field.value = ""
+        self.next_button_step2.disabled = True
+        self.page.update()
+
     def generate_prompt_with_xsd(self) -> str:
         """Generiert den Prompt mit XSD und extrahiert nur die relevanten Teile basierend auf den ausgewählten Fragetypen"""
         if not self.selected_question_types:
@@ -310,6 +318,15 @@ class MultiConverterApp:
         try:
             pyperclip.copy(text)
             self.show_snackbar("Text wurde in die Zwischenablage kopiert")
+        except Exception as e:
+            self.show_snackbar(f"Fehler beim Kopieren: {str(e)}")
+
+    def paste_from_clipboard(self):
+        """Kopiert Text aus der Zwischenablage"""
+        try:
+            self.xml_output_field.value = pyperclip.paste()
+            self.update_new_xml_output()
+            self.show_snackbar("Text wurde aus der Zwischenablage eingefügt")
         except Exception as e:
             self.show_snackbar(f"Fehler beim Kopieren: {str(e)}")
 
@@ -447,7 +464,8 @@ class MultiConverterApp:
                 error_messages = []
                 for error_type, error_message in validation_result.errors:
                     error_messages.append(error_message)
-                result_field.value = f"Validierungsfehler:\n" + "\n".join(error_messages)
+                result_field.value = ("Überleg noch einmal. Der XML Parser hat folgenden Fehler ausgegeben:\n"
+                                      + "\n".join(error_messages))
                 self.validated_questions = []
                 # Button deaktivieren
                 if hasattr(self, 'next_button_step2'):
