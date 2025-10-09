@@ -15,7 +15,7 @@ requires-python = ">=3.10"
 dependencies = [
     "lxml>=6.0.1,<7.0",
     "Jinja2>=3.1.6,<4.0",
-    "flet>=0.25.0,<1.0",
+    "flet==0.28.2",  # FilePicker benötigt 0.28.2 unter MacOS, 0.28.3 läuft nicht
     "pyperclip>=1.8.0,<2.0",
 ]
 

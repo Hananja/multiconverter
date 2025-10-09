@@ -51,7 +51,6 @@ class MultiConverterApp:
         self.save_file_picker = ft.FilePicker(
             on_result=self.save_file_result
         )
-        self.page.overlay.append(self.save_file_picker)
         self.setup_ui()
 
     def setup_ui(self):
@@ -398,6 +397,8 @@ class MultiConverterApp:
 
     def on_all_questions_processed(self):
         """Callback wenn alle Fragen verarbeitet wurden"""
+        for question in self.processed_questions:
+            self.question_handlers.handle_question(question)
         self.next_step()
 
     def save_xml_document(self):
@@ -408,11 +409,18 @@ class MultiConverterApp:
     def save_zip_archive(self):
         """Speichert ZIP Archiv"""
         try:
+            # see save_file_result()
             self.zip_data = self.question_handlers.get_zip()
             # Dateidialog öffnen
+            if not self.save_file_picker in self.page.overlay:
+                self.page.overlay.append(self.save_file_picker)
+                self.page.update()
             self.save_file_picker.save_file(
+                dialog_title="itslearning QTI ZIP Archiv speichern",
                 file_name="questions.zip",
-                allowed_extensions=["zip"]
+                allowed_extensions=["zip"],
+                initial_directory=Path.home().as_posix(),
+                file_type=ft.FilePickerFileType.CUSTOM
             )
         except OSError as e:
             self.show_snackbar(f"Fehler beim Erstellen des ZIP Archivs: {str(e)}")
