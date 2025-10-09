@@ -277,7 +277,7 @@ class MultiConverterApp:
             ],
             modal=True)
 
-        self.page.add(alert_dialog)
+        self.page.add(alert_dialog)  # TODO: remove on close?
         alert_dialog.open = True
         self.page.update()
 
