@@ -8,21 +8,19 @@ with [`pipx`](https://pipx.pypa.io) (recommended):
 ```
 pipx install git+https://github.com/Hananja/multiconverter.git
 ```
-with plain old pip:
-```
-python -m pip install git+https://github.com/Hananja/multiconverter.git
-```
-
-Installation with virtual environment for non admins:
-
-```
-python -c "import venv,subprocess,os; d='multiconverter_venv'; venv.create(d, with_pip=True); py=os.path.join(d, 'Scripts' if os.name=='nt' else 'bin', 'python'); subprocess.check_call([py,'-m','pip','install','git+https://github.com/Hananja/multiconverter'])"
-```
 
 # Run GUI app
 ```shell
 multiconverter-gui
 ```
+
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="doc/screenshot_1.png" alt="Screenshot Step 1"/>
+  <img src="doc/screenshot_2.png" alt="Screenshot Step 2"/>
+  <img src="doc/screenshot_3.png" alt="Screenshot Step 3"/>
+  <img src="doc/screenshot_4.png" alt="Screenshot Step 4"/>
+</div>
+
 # Run commandline app
 
 ```
