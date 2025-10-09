@@ -262,10 +262,10 @@ class MultiConverterApp:
         ])
 
     def handle_quit(self):
-        def button_handler(answer: bool):
+        def button_handler(do_quit: bool):
             alert_dialog.open = False
             self.page.update()
-            if answer:
+            if do_quit:
                 self.page.window.close()
 
         alert_dialog = ft.AlertDialog(
