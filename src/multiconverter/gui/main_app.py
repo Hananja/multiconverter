@@ -10,7 +10,7 @@ from pathlib import Path
 from lxml import etree
 
 from build.lib.multiconverter.tools import minimize_xsd_advanced
-from ..converter5 import QuestionHandlers
+from ..converter5 import QuestionHandlers, jinja_env
 from ..xml_validator import XMLValidator
 from .question_editor import QuestionEditorView
 
@@ -43,7 +43,7 @@ class MultiConverterApp:
         self.validation_result_field = None
         self.validated_questions = []
         self.processed_questions = []
-        self.question_handlers = QuestionHandlers()
+        self.question_handlers = None
         self.xml_validator = XMLValidator(xsd_path)
 
         # UI Komponenten
@@ -105,6 +105,8 @@ class MultiConverterApp:
             "fill-in-question": "Lückentext Fragen",
             "map-question": "Zuordnungsfragen"
         }
+        assert all(qt in QuestionHandlers.get_question_types() for qt in question_types.keys()),\
+            "Fragetypen stimmen nicht mit QuestionHandlers überein"
 
         checkboxes = []
         for key, label in question_types.items():
@@ -349,9 +351,12 @@ class MultiConverterApp:
     def paste_from_clipboard(self):
         """Kopiert Text aus der Zwischenablage"""
         try:
-            self.xml_output_field.value = pyperclip.paste()
+            self.xml_output_field.value = pyperclip.paste().strip()
             self.update_new_xml_output()
-            self.show_snackbar("Text wurde aus der Zwischenablage eingefügt")
+            if len(self.xml_output_field.value.strip()) > 0:
+                self.show_snackbar("Text wurde aus der Zwischenablage eingefügt")
+            else:
+                self.show_snackbar("Zwischenablage ist leer")
         except OSError as e:
             self.show_snackbar(f"Fehler beim Kopieren: {str(e)}")
 
@@ -397,14 +402,31 @@ class MultiConverterApp:
 
     def on_all_questions_processed(self):
         """Callback wenn alle Fragen verarbeitet wurden"""
+        self.question_handlers = QuestionHandlers()
         for question in self.processed_questions:
             self.question_handlers.handle_question(question)
         self.next_step()
 
     def save_xml_document(self):
         """Speichert XML Dokument"""
-        # Hier würde normalerweise ein Dateidialog geöffnet
-        self.show_snackbar("XML Dokument Speicherung nicht implementiert")
+        try:
+            self.xml_data = jinja_env.get_template("questions.xml.jinja").render(
+                questions=map(lambda x:ET.tostring(x, encoding='utf-8').decode('utf-8'),
+                              self.processed_questions))
+            # Dateidialog öffnen
+            if not self.save_file_picker in self.page.overlay:
+                self.page.overlay.append(self.save_file_picker)
+                self.page.update()
+            self.save_file_picker.save_file(
+                dialog_title="XML speichern",
+                file_name="questions.xml",
+                allowed_extensions=["xml"],
+                initial_directory=Path.home().as_posix(),
+                file_type=ft.FilePickerFileType.CUSTOM
+            )
+        except OSError as e:
+            self.show_snackbar(f"Fehler beim Erstellen der XML Datei: {str(e)}")
+
 
     def save_zip_archive(self):
         """Speichert ZIP Archiv"""
@@ -430,8 +452,14 @@ class MultiConverterApp:
         if e.path:
             try:
                 with open(e.path, 'wb') as f:
-                    f.write(self.zip_data)
-                self.show_snackbar(f"ZIP Archiv erfolgreich gespeichert: {e.path}")
+                    if "zip" in e.control.allowed_extensions:
+                        f.write(self.zip_data)
+                    elif "xml" in e.control.allowed_extensions:
+                        f.write(self.xml_data.encode("utf-8"))
+                    else:
+                        self.show_snackbar("Unbekannter Dateityp. Nur .xml und .zip sind erlaubt.")
+                        return
+                self.show_snackbar(f"Datei erfolgreich gespeichert: {e.path}")
             except OSError as err:
                 self.show_snackbar(f"Fehler beim Speichern: {str(err)}")
 
