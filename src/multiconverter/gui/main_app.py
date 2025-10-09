@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from lxml import etree
 
-from build.lib.multiconverter.tools import minimize_xsd_advanced
+from ..tools import minimize_xsd_advanced
 from ..converter5 import QuestionHandlers, jinja_env
 from ..xml_validator import XMLValidator
 from .question_editor import QuestionEditorView
