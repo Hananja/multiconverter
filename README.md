@@ -19,7 +19,10 @@ Installation with virtual environment for non admins:
 python -c "import venv,subprocess,os; d='multiconverter_venv'; venv.create(d, with_pip=True); py=os.path.join(d, 'Scripts' if os.name=='nt' else 'bin', 'python'); subprocess.check_call([py,'-m','pip','install','git+https://github.com/Hananja/multiconverter'])"
 ```
 
-
+# Run GUI app
+```shell
+multiconverter-gui
+```
 # Run commandline app
 
 ```
