@@ -30,9 +30,9 @@ class MultiConverterApp:
     def __init__(self, page: ft.Page):
         self.next_button_step2 = None
         self.page = page
-        self.page.title = "MultiConverter GUI"
+        self.page.title = "MultiConverter Frage Generator"
         self.page.window_width = 1200
-        self.page.window_height = 800
+        self.page.window_height = 900
         self.page.theme_mode = ft.ThemeMode.LIGHT
 
         # Datenstrukturen
@@ -64,7 +64,7 @@ class MultiConverterApp:
             ft.Container(
                 content=ft.Text(
                     "MultiConverter - Frage Generator",
-                    style=ft.TextThemeStyle.HEADLINE_LARGE,
+                    style=ft.TextThemeStyle.HEADLINE_SMALL,
                     color=ft.Colors.WHITE
                 ),
                 bgcolor=ft.Colors.BLUE,
@@ -232,8 +232,8 @@ class MultiConverterApp:
     def build_step4(self):
         """Schritt 4: Export und weitere Optionen"""
         return ft.Column([
-            ft.Text("Schritt 4: Export", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-            ft.Text(f"Verarbeitete Fragen: {len(self.processed_questions)}"),
+            ft.Text("Schritt 4: Export"),
+            ft.Text(f"gesicherte Fragen: {len(self.processed_questions)}"),
             ft.Row([
                 ft.ElevatedButton(
                     "XML Dokument speichern",
@@ -255,11 +255,31 @@ class MultiConverterApp:
                 ),
                 ft.ElevatedButton(
                     "Beenden",
-                    on_click=lambda _: self.page.window_close(),
+                    on_click=lambda _: self.handle_quit(),
                     icon=ft.Icons.EXIT_TO_APP
                 )
             ])
         ])
+
+    def handle_quit(self):
+        def button_handler(answer: bool):
+            alert_dialog.open = False
+            self.page.update()
+            if answer:
+                self.page.window.close()
+
+        alert_dialog = ft.AlertDialog(
+            title=ft.Text("Beenden"),
+            content=ft.Text("Möchten Sie wirklich beenden?"),
+            actions=[
+                ft.TextButton("Ja", on_click=lambda _: button_handler(True)),
+                ft.TextButton("Nein", on_click=lambda _: button_handler(False)),
+            ],
+            modal=True)
+
+        self.page.add(alert_dialog)
+        alert_dialog.open = True
+        self.page.update()
 
     def toggle_question_type(self, question_type: str, selected: bool):
         """Verwaltet die Auswahl der Fragetypen"""
