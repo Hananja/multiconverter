@@ -30,7 +30,7 @@ class MultiConverterApp:
     def __init__(self, page: ft.Page):
         self.next_button_step2 = None
         self.page = page
-        self.page.title = "MultiConverter Frage Generator"
+        self.page.title = "MultiConverter"
         self.page.window_width = 1200
         self.page.window_height = 900
         self.page.theme_mode = ft.ThemeMode.LIGHT
@@ -63,7 +63,7 @@ class MultiConverterApp:
         return ft.Column([
             ft.Container(
                 content=ft.Text(
-                    "MultiConverter - Frage Generator",
+                    "itslearning Tests mit LLM erstellen",
                     style=ft.TextThemeStyle.HEADLINE_SMALL,
                     color=ft.Colors.WHITE
                 ),
@@ -136,7 +136,7 @@ class MultiConverterApp:
 
         col_controls = [
             ft.Text("Schritt 1: Fragetypen auswählen und Prompt eingeben"),
-            ft.Column(checkboxes),
+            ft.Row(checkboxes),
             prompt_field,
             visible_debug_only(self.output_field),
             ft.Row([
@@ -344,7 +344,7 @@ class MultiConverterApp:
         try:
             pyperclip.copy(text)
             self.show_snackbar("Text wurde in die Zwischenablage kopiert")
-        except Exception as e:
+        except OSError as e:
             self.show_snackbar(f"Fehler beim Kopieren: {str(e)}")
 
     def paste_from_clipboard(self):
@@ -353,7 +353,7 @@ class MultiConverterApp:
             self.xml_output_field.value = pyperclip.paste()
             self.update_new_xml_output()
             self.show_snackbar("Text wurde aus der Zwischenablage eingefügt")
-        except Exception as e:
+        except OSError as e:
             self.show_snackbar(f"Fehler beim Kopieren: {str(e)}")
 
     def validate_xml(self, result_field: ft.TextField):
@@ -375,7 +375,7 @@ class MultiConverterApp:
                     error_messages.append(error_message)
                 result_field.value = f"Validierungsfehler:\n" + "\n".join(error_messages)
                 self.validated_questions = []
-        except Exception as e:
+        except OSError as e:
             result_field.value = f"Fehler bei der Validierung: {str(e)}"
             self.validated_questions = []
 
@@ -386,7 +386,7 @@ class MultiConverterApp:
         try:
             root = ET.fromstring(self.xml_output)
             self.validated_questions = list(root)
-        except Exception as e:
+        except ET.ParseError as e:
             self.show_snackbar(f"Fehler beim Extrahieren der Fragen: {str(e)}")
             self.validated_questions = []
 
@@ -414,7 +414,7 @@ class MultiConverterApp:
                 file_name="questions.zip",
                 allowed_extensions=["zip"]
             )
-        except Exception as e:
+        except OSError as e:
             self.show_snackbar(f"Fehler beim Erstellen des ZIP Archivs: {str(e)}")
 
     def save_file_result(self, e: ft.FilePickerResultEvent):
@@ -424,7 +424,7 @@ class MultiConverterApp:
                 with open(e.path, 'wb') as f:
                     f.write(self.zip_data)
                 self.show_snackbar(f"ZIP Archiv erfolgreich gespeichert: {e.path}")
-            except Exception as err:
+            except OSError as err:
                 self.show_snackbar(f"Fehler beim Speichern: {str(err)}")
 
     def restart_wizard(self):
@@ -453,16 +453,13 @@ class MultiConverterApp:
 
     def show_snackbar(self, message: str):
         """Zeigt eine Snackbar-Nachricht"""
-        try:
-            snackbar = ft.SnackBar(
-                content=ft.Text(message),
-                open=True
-            )
-            self.page.snack_bar = snackbar
-            self.page.overlay.append(snackbar)
-            self.page.update()
-        except Exception as e:
-            print(f"Fehler beim Anzeigen der Snackbar: {e}")
+        snackbar = ft.SnackBar(
+            content=ft.Text(message),
+            open=True
+        )
+        self.page.snack_bar = snackbar
+        self.page.overlay.append(snackbar)
+        self.page.update()
 
 
 
@@ -496,7 +493,7 @@ class MultiConverterApp:
                 # Button deaktivieren
                 if hasattr(self, 'next_button_step2'):
                     self.next_button_step2.disabled = True
-        except Exception as e:
+        except OSError as e:
             result_field.value = f"Fehler bei der Validierung: {str(e)}"
             self.validated_questions = []
             # Button deaktivieren
