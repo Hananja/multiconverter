@@ -234,7 +234,7 @@ class MultiConverterApp:
         """Schritt 4: Export und weitere Optionen"""
         return ft.Column([
             ft.Text("Schritt 4: Export"),
-            ft.Text(f"gesicherte Fragen: {len(self.processed_questions)}"),
+            ft.Text(f"Anzahl der gesicherten Fragen: {len(self.processed_questions)}"),
             ft.Row([
                 ft.ElevatedButton(
                     "XML Dokument speichern",
@@ -242,7 +242,7 @@ class MultiConverterApp:
                     icon=ft.Icons.SAVE
                 ),
                 ft.ElevatedButton(
-                    "ZIP Archiv speichern",
+                    "itslearning ZIP speichern",
                     on_click=lambda _: self.save_zip_archive(),
                     icon=ft.Icons.ARCHIVE
                 )
