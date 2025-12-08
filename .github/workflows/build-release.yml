@@ -1,0 +1,94 @@
+name: Build Multi-Platform Executables
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggert bei Version-Tags (z.B. v1.0.0)
+  workflow_dispatch:  # Ermöglicht manuelles Triggern
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python-version: ['3.11']
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Poetry
+      run: |
+        pip install poetry==1.7.0
+
+    - name: Install Dependencies
+      run: |
+        poetry install --no-dev
+
+    - name: Install PyInstaller
+      run: |
+        pip install pyinstaller==6.3.0
+
+    - name: Build Executable (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        pyinstaller --onefile --name multiconverter `
+          --hidden-import=lxml.etree `
+          --add-data "src/multiconverter/schema.xsd;." `
+          src/multiconverter/main.py
+
+    - name: Build Executable (macOS/Linux)
+      if: matrix.os != 'windows-latest'
+      run: |
+        pyinstaller --onefile --name multiconverter \
+          --hidden-import=lxml.etree \
+          --add-data "src/multiconverter/schema.xsd:." \
+          src/multiconverter/main.py
+
+    - name: Create Archive (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        Compress-Archive -Path dist/multiconverter.exe -DestinationPath multiconverter-windows-x64.zip
+
+    - name: Create Archive (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        zip -j multiconverter-macos-arm64.zip dist/multiconverter
+        chmod +x dist/multiconverter
+
+    - name: Create Archive (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        tar -czvf multiconverter-linux-x64.tar.gz -C dist multiconverter
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: multiconverter-${{ matrix.os }}
+        path: |
+          multiconverter-*.zip
+          multiconverter-*.tar.gz
+        retention-days: 90
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          multiconverter-windows-x64.zip
+          multiconverter-macos-arm64.zip
+          multiconverter-linux-x64.tar.gz
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
