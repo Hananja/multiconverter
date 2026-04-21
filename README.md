@@ -1,15 +1,17 @@
 # multiconverter
+
 Converter tool from LLM output to QTI itslearning test.
 
 # Installation
 
 with [`pipx`](https://pipx.pypa.io) (recommended):
 
-```
+```shell
 pipx install git+https://github.com/Hananja/multiconverter.git
 ```
 
 # Run GUI app
+
 ```shell
 multiconverter-gui
 ```
@@ -23,8 +25,9 @@ multiconverter-gui
 
 # Run commandline app
 
-```
-python -m multiconverter <output_file>.zip <input_file1>.xml [<input_file2>.xml ...]
+```shell
+python -m multiconverter <output_file>.zip <input_file1>.xml \
+        [<input_file2>.xml ...]
 ```
 
 (or with `pipx` just `multiconverter ...`)
@@ -61,6 +64,7 @@ adjusted (e.g., by deleting questions).
 # Supported question types
 
 ## single and multiple choice
+
 ```xml
 <multiple-choice-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Was bedeutet WWW?</text>
@@ -74,6 +78,7 @@ adjusted (e.g., by deleting questions).
 ```
 
 ## fill in text
+
 ```xml
 <fill-in-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Für jedes Ereignis, das weder sicher noch unmöglich ist, gilt: </text>
@@ -83,6 +88,7 @@ adjusted (e.g., by deleting questions).
 ```
 
 ## map items
+
 ```xml
 <map-question xmlns="https://github.com/Hananja/multiconverter">
     <text>Match the pairs.</text>
