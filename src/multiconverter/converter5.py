@@ -17,7 +17,8 @@ xsd_path = os.path.join(script_dir, "xml/llmquestions.xsd")
 jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(template_dir),
     # autoescape=jinja2.select_autoescape(['html', 'xml']),
-    undefined=jinja2.StrictUndefined
+    undefined=jinja2.StrictUndefined,
+    autoescape=True
 )
 jinja_env.globals['include_min_xsd_file'] = include_min_xsd_file
 
